@@ -2,6 +2,11 @@
 
 This is the code used for the paper [Improving Missing Value Imputation with Deep Generative Models](https://arxiv.org/abs/1902.10666).
 
+I submitted this paper to ICML 2019 and got rejected.
+This is a work in progress, but some people asked me to release the code.
+I have a lot to improve and I am pretty much alone coding this, so if you have suggestions or if you find problems
+I will appreciate the feedback.
+
 ## Requirements
 
 This code was tested with Python 2.7.15 (sorry for keep using Python 2, I will migrate to Python 3 soon).
@@ -55,3 +60,5 @@ Every executable script has a commandline interface that will print a descriptiv
  You will need writing permission on the directory executing the scripts.
  
  If you execute the script entirely as it is, it may take **a long time**.
+
+Also, take into account that the script does not use the same hyperparameters I used, so you might get different results.
