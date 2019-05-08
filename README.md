@@ -62,3 +62,14 @@ Every executable script has a commandline interface that will print a descriptiv
  If you execute the script entirely as it is, it may take **a long time**.
 
 Also, take into account that the script does not use the same hyperparameters I used, so you might get different results.
+
+## About the GAIN implementation
+
+I based my implementation on the author's [code example](https://github.com/jsyoon0823/GAIN).
+
+I could not reproduce the GAIN paper results exactly so I exchanged some questions with one of the authors [here](https://github.com/jsyoon0823/GAIN/issues/2)
+and via email (I thank [jsyoon0823](https://github.com/jsyoon0823) for his patience).
+Other people also asked more questions [here](https://github.com/jsyoon0823/GAIN/issues).
+
+Take into account that my implementation has some "optional architecture changes"
+based on my paper (the multi-input and multi-output).
