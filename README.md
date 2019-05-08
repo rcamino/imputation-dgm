@@ -9,14 +9,14 @@ I will appreciate the feedback.
 
 ## Requirements
 
-This code was tested with Python 2.7.15 (sorry for keep using Python 2, I will migrate to Python 3 soon).
+This code was tested with Python 3.6.7.
 All the python libraries required to run this code are listed on the file `requirements.txt`.
 I recommend installing everything with pip inside a virtual environment.
 Run this code inside the project directory root:
 
 ```bash
-# create the virtual environment with python 2
-virtualenv --python=/usr/bin/python2 venv
+# create the virtual environment with python 3
+virtualenv --python=/usr/bin/python3 venv
 
 # activate the virtual environment
 . venv/bin/activate
@@ -25,7 +25,7 @@ virtualenv --python=/usr/bin/python2 venv
 pip install -r requirements.txt
 
 # just in case to have the project on the python path
-echo `pwd` > venv/lib/python2.7/imputation-dgm.pth
+echo `pwd` > venv/lib/python3.6/site-packages/imputation-dgm.pth
 ```
 
 If CUDA is available the code will detect it automatically, but a different PyTorch package might need to be installed.
