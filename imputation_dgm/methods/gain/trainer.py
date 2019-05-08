@@ -119,7 +119,7 @@ class Trainer(object):
         reconstruction_loss = reconstruction_loss_function(mask * generated,
                                                            mask * features,
                                                            self.variable_sizes,
-                                                           size_average=False) / torch.sum(mask)
+                                                           reduction="sum") / torch.sum(mask)
         # combine both losses with a weight on the reconstruction loss
         loss = adversarial_loss + reconstruction_loss * self.reconstruction_loss_weight
 

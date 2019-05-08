@@ -22,4 +22,4 @@ def masked_reconstruction_loss_function(reconstructed, original, mask, variable_
     return reconstruction_loss_function(mask * reconstructed,
                                         mask * original,
                                         variable_sizes,
-                                        size_average=False) / torch.sum(mask)
+                                        reduction="sum") / torch.sum(mask)
