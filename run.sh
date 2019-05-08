@@ -160,7 +160,7 @@ done
 for miss_prob in 0.2 0.5 0.8; do
     for seed in 1 2 3 4; do
         echo "[GAIN-split default-credit-card missing_probability=${miss_prob} seed=${seed}]"
-        python imputation_dgm/methods/gain-split/trainer.py \
+        python imputation_dgm/methods/gain/trainer.py \
             "data/default-credit-card/features-train.npy" \
             "data/default-credit-card/features-test.npy" \
             "data/default-credit-card/metadata.json" \
@@ -186,7 +186,7 @@ for miss_prob in 0.2 0.5 0.8; do
 
     for seed in 1 2 3 4; do
         echo "[GAIN-split online-news-popularity missing_probability=${miss_prob} seed=${seed}]"
-        python imputation_dgm/methods/gain-split/trainer.py \
+        python imputation_dgm/methods/gain/trainer.py \
             "data/online-news-popularity/features-train.npy" \
             "data/online-news-popularity/features-test.npy" \
             "data/online-news-popularity/metadata.json" \
