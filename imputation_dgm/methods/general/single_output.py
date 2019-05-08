@@ -2,8 +2,10 @@ from __future__ import print_function
 
 import torch.nn as nn
 
+from imputation_dgm.methods.general.output_layer import OutputLayer
 
-class SingleOutput(nn.Module):
+
+class SingleOutput(OutputLayer):
 
     def __init__(self, previous_layer_size, output_size, activation=None):
         super(SingleOutput, self).__init__()

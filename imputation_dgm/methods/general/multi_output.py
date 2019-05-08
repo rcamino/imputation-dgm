@@ -6,8 +6,10 @@ import torch.nn.functional as F
 
 from torch.distributions.one_hot_categorical import OneHotCategorical
 
+from imputation_dgm.methods.general.output_layer import OutputLayer
 
-class MultiOutput(nn.Module):
+
+class MultiOutput(OutputLayer):
 
     def __init__(self, input_size, variable_sizes):
         super(MultiOutput, self).__init__()
