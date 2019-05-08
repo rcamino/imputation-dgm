@@ -17,7 +17,7 @@ def main():
 
     workbook = xlrd.open_workbook("data/default-credit-card/default_credit_card_clients.xls")
     sheet = workbook.sheet_by_name("Data")
-    with open("data/default-credit-card/default_credit_card_clients.csv", "wb") as csv_file:
+    with open("data/default-credit-card/default_credit_card_clients.csv", "w") as csv_file:
         writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
 
         for row_number in range(1, sheet.nrows):  # ignore first redundant row
