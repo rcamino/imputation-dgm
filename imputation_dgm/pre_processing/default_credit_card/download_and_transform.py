@@ -10,7 +10,7 @@ def main():
     create_directories_if_needed("data/default-credit-card")
 
     wget.download(
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls",
+        "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default of credit card clients.xls",
         "data/default-credit-card/default_credit_card_clients.xls"
     )
     print()
