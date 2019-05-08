@@ -396,7 +396,6 @@ def main(args=None):
         hint_probability=options.hint_probability,
         max_seconds_without_save=options.max_seconds_without_save,
         early_stopping_patience=options.early_stopping_patience,
-        temperature=options.temperature
     )
 
 
