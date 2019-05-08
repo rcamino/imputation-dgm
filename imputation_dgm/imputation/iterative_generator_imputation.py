@@ -22,7 +22,6 @@ def impute(generator,
            max_iterations=1000,
            tolerance=1e-3,
            variable_sizes=None,
-           temperature=None,
            ):
     start_time = time.time()
     generator = to_cuda_if_available(generator)
@@ -48,7 +47,7 @@ def impute(generator,
 
         noisy_features = observed + missing * inverted_mask
         noise = generate_noise_like(noisy_features, noise_size)
-        generated = generator(noise, training=True, temperature=temperature)
+        generated = generator(noise, training=True)
 
         observed_loss = masked_reconstruction_loss_function(generated,
                                                             features,

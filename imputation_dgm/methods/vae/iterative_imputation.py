@@ -26,7 +26,6 @@ def impute(vae,
            max_iterations=1000,
            tolerance=1e-3,
            variable_sizes=None,
-           temperature=None,
            noise_learning_rate=None
            ):
     start_time = time.time()
@@ -54,7 +53,7 @@ def impute(vae,
             optim.zero_grad()
 
         noisy_features = observed + missing * inverted_mask
-        _, reconstructed, _, _ = vae(noisy_features, training=True, temperature=temperature)
+        _, reconstructed, _, _ = vae(noisy_features, training=True)
 
         observed_loss = masked_reconstruction_loss_function(reconstructed,
                                                             features,
@@ -197,7 +196,8 @@ def main(args=None):
         options.code_size,
         encoder_hidden_sizes=parse_int_list(options.encoder_hidden_sizes),
         decoder_hidden_sizes=parse_int_list(options.decoder_hidden_sizes),
-        variable_sizes=(None if temperature is None else variable_sizes)  # do not use multi-output without temperature
+        variable_sizes=(None if temperature is None else variable_sizes),  # do not use multi-output without temperature
+        temperature=temperature
     )
 
     load_without_cuda(vae, options.model)
@@ -210,7 +210,6 @@ def main(args=None):
         max_iterations=options.max_iterations,
         tolerance=options.tolerance,
         variable_sizes=variable_sizes,
-        temperature=temperature,
         noise_learning_rate=options.noise_learning_rate
     )
 

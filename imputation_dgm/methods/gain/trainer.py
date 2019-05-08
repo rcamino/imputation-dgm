@@ -30,8 +30,7 @@ from imputation_dgm.variables import load_variable_sizes_from_metadata
 class Trainer(object):
 
     def __init__(self, train_data, test_data, generator, discriminator, optim_gen, optim_disc, batch_size,
-                 variable_sizes, num_disc_steps, num_gen_steps, reconstruction_loss_weight, hint_probability,
-                 temperature):
+                 variable_sizes, num_disc_steps, num_gen_steps, reconstruction_loss_weight, hint_probability):
 
         self.train_data = train_data
         self.test_data = test_data
@@ -45,7 +44,6 @@ class Trainer(object):
         self.num_gen_steps = num_gen_steps
         self.reconstruction_loss_weight = reconstruction_loss_weight
         self.hint_probability = hint_probability
-        self.temperature = temperature
 
         self.adversarial_loss_function = BCELoss()
         self.test_loss_function = MSELoss()
@@ -88,8 +86,7 @@ class Trainer(object):
     def train_discriminator(self, features, mask, noisy_features):
         self.optim_disc.zero_grad()
 
-        generated = self.generator(Variable(noisy_features), Variable(mask),
-                                   training=True, temperature=self.temperature)
+        generated = self.generator(Variable(noisy_features), Variable(mask), training=True)
         imputed = compose_with_mask(noisy_features, generated, mask)
         hint = generate_hint_for(mask, self.hint_probability, self.variable_sizes)
         # detach to avoid back-propagation to the generator not needed for discriminator training (goes faster)
@@ -107,8 +104,7 @@ class Trainer(object):
     def train_generator(self, features, mask, noisy_features):
         self.optim_gen.zero_grad()
 
-        generated = self.generator(Variable(noisy_features), Variable(mask),
-                                   training=True, temperature=self.temperature)
+        generated = self.generator(Variable(noisy_features), Variable(mask), training=True)
         imputed = compose_with_mask(noisy_features, generated, mask)
         hint = generate_hint_for(mask, self.hint_probability, self.variable_sizes)
         predictions = self.discriminator(imputed, Variable(hint))
@@ -138,8 +134,7 @@ class Trainer(object):
         features, mask, noisy_features = iterator.next()
 
         with torch.no_grad():
-            generated = self.generator(Variable(noisy_features), Variable(mask),
-                                       training=True, temperature=self.temperature)
+            generated = self.generator(Variable(noisy_features), Variable(mask), training=True)
             imputed = compose_with_mask(noisy_features, generated, mask)
 
             # transform MSE into RMSE (to report the same metrics from the paper)
@@ -170,7 +165,6 @@ def train(generator,
           hint_probability=0.9,
           max_seconds_without_save=300,
           early_stopping_patience=100,
-          temperature=None
           ):
     start_time = time.time()
     generator, discriminator = to_cuda_if_available(generator, discriminator)
@@ -184,7 +178,7 @@ def train(generator,
 
     trainer = Trainer(train_data, test_data, generator, discriminator, optim_gen, optim_disc, batch_size,
                       variable_sizes, num_disc_steps, num_gen_steps, reconstruction_loss_weight,
-                      hint_probability, temperature)
+                      hint_probability)
 
     # initialize early stopping
     best_test_mean_loss = None
@@ -373,7 +367,10 @@ def main(args=None):
     else:
         size = variable_sizes
 
-    generator = Generator(size, hidden_sizes=parse_int_list(options.generator_hidden_sizes))
+    generator = Generator(size,
+                          hidden_sizes=parse_int_list(options.generator_hidden_sizes),
+                          temperature=options.temperature)
+
     load_or_initialize(generator, options.input_generator)
 
     discriminator = Discriminator(size, hidden_sizes=parse_int_list(options.discriminator_hidden_sizes))

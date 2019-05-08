@@ -14,6 +14,5 @@ class SingleOutput(OutputLayer):
         else:
             self.model = nn.Sequential(nn.Linear(previous_layer_size, output_size), activation)
 
-    def forward(self, hidden, training=False, temperature=None):
-        assert temperature is None
+    def forward(self, hidden, training=False):
         return self.model(hidden)

@@ -25,14 +25,13 @@ from imputation_dgm.variables import load_variable_sizes_from_metadata
 
 class Trainer(object):
 
-    def __init__(self, vae, train_data, test_data, batch_size, optim, variable_sizes, temperature):
+    def __init__(self, vae, train_data, test_data, batch_size, optim, variable_sizes):
         self.vae = vae
         self.train_data = train_data
         self.test_data = test_data
         self.batch_size = batch_size
         self.optim = optim
         self.variable_sizes = variable_sizes
-        self.temperature = temperature
 
         self.test_loss_function = MSELoss()
 
@@ -46,7 +45,7 @@ class Trainer(object):
     def train_batch(self, features, mask, noisy_features):
         self.optim.zero_grad()
 
-        _, reconstructed, mu, log_var = self.vae(noisy_features, training=True, temperature=self.temperature)
+        _, reconstructed, mu, log_var = self.vae(noisy_features, training=True)
 
         # reconstruction of the non-missing values
         reconstruction_loss = masked_reconstruction_loss_function(reconstructed,
@@ -71,7 +70,7 @@ class Trainer(object):
         features, mask, noisy_features = iterator.next()
 
         with torch.no_grad():
-            _, reconstructed, _, _ = self.vae(noisy_features, training=False, temperature=self.temperature)
+            _, reconstructed, _, _ = self.vae(noisy_features, training=False)
 
             imputed = compose_with_mask(noisy_features, reconstructed, mask)
 
@@ -95,7 +94,6 @@ def train(vae,
           l2_regularization=0.001,
           learning_rate=0.001,
           variable_sizes=None,
-          temperature=None,
           max_seconds_without_save=300
           ):
     start_time = time.time()
@@ -107,7 +105,7 @@ def train(vae,
 
     saver = Saver({vae: output_path}, logger, max_seconds_without_save)
 
-    trainer = Trainer(vae, train_data, test_data, batch_size, optim, variable_sizes, temperature)
+    trainer = Trainer(vae, train_data, test_data, batch_size, optim, variable_sizes)
 
     for epoch_index in range(start_epoch, num_epochs):
         # train vae
@@ -260,7 +258,8 @@ def main(args=None):
         options.code_size,
         encoder_hidden_sizes=parse_int_list(options.encoder_hidden_sizes),
         decoder_hidden_sizes=parse_int_list(options.decoder_hidden_sizes),
-        variable_sizes=(None if temperature is None else variable_sizes)  # do not use multi-output without temperature
+        variable_sizes=(None if temperature is None else variable_sizes),  # do not use multi-output without temperature
+        temperature=temperature
     )
 
     load_or_initialize(vae, options.input_model)
@@ -277,7 +276,6 @@ def main(args=None):
         l2_regularization=options.l2_regularization,
         learning_rate=options.learning_rate,
         variable_sizes=variable_sizes,
-        temperature=temperature,
         max_seconds_without_save=options.max_seconds_without_save
     )
 

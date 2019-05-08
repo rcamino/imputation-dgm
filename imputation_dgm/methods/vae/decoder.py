@@ -8,7 +8,7 @@ from imputation_dgm.methods.general.single_output import SingleOutput
 
 class Decoder(nn.Module):
 
-    def __init__(self, code_size, output_size, hidden_sizes=[], variable_sizes=None):
+    def __init__(self, code_size, output_size, hidden_sizes=[], variable_sizes=None, temperature=None):
         super(Decoder, self).__init__()
 
         hidden_activation = nn.Tanh()
@@ -29,12 +29,12 @@ class Decoder(nn.Module):
         if variable_sizes is None:
             self.output_layer = SingleOutput(previous_layer_size, output_size, activation=nn.Sigmoid())
         else:
-            self.output_layer = MultiOutput(previous_layer_size, variable_sizes)
+            self.output_layer = MultiOutput(previous_layer_size, variable_sizes, temperature=temperature)
 
-    def forward(self, code, training=False, temperature=None):
+    def forward(self, code, training=False):
         if self.hidden_layers is None:
             hidden = code
         else:
             hidden = self.hidden_layers(code)
 
-        return self.output_layer(hidden, training=training, temperature=temperature)
+        return self.output_layer(hidden, training=training)

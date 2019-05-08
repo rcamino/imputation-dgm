@@ -10,7 +10,7 @@ from imputation_dgm.methods.general.single_output import SingleOutput
 
 class Generator(nn.Module):
 
-    def __init__(self, size, hidden_sizes=[], mask_variables=False):
+    def __init__(self, size, hidden_sizes=[], mask_variables=False, temperature=None):
         super(Generator, self).__init__()
 
         hidden_activation = nn.Tanh()
@@ -43,14 +43,13 @@ class Generator(nn.Module):
         if type(size) is int:
             self.output_layer = SingleOutput(previous_layer_size, size, activation=nn.Sigmoid())
         elif type(size) is list:
-            self.output_layer = MultiOutput(previous_layer_size, size)
+            assert temperature is not None
+            self.output_layer = MultiOutput(previous_layer_size, size, temperature=temperature)
 
-    def forward(self, inputs, mask, training=False, temperature=None):
+    def forward(self, inputs, mask, training=False):
         if self.multi_input_layer is None:
-            assert temperature is None
             outputs = inputs
         else:
-            assert temperature is not None
             outputs = self.multi_input_layer(inputs)
 
         outputs = torch.cat((outputs, mask), dim=1)
@@ -58,4 +57,4 @@ class Generator(nn.Module):
         if self.hidden_layers is not None:
             outputs = self.hidden_layers(outputs)
 
-        return self.output_layer(outputs, training=training, temperature=temperature)
+        return self.output_layer(outputs, training=training)

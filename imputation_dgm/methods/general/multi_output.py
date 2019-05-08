@@ -11,7 +11,7 @@ from imputation_dgm.methods.general.output_layer import OutputLayer
 
 class MultiOutput(OutputLayer):
 
-    def __init__(self, input_size, variable_sizes):
+    def __init__(self, input_size, variable_sizes, temperature=None):
         super(MultiOutput, self).__init__()
 
         self.output_layers = nn.ModuleList()
@@ -28,7 +28,7 @@ class MultiOutput(OutputLayer):
                     numerical_size = 0
                 # create the categorical layer
                 self.output_layers.append(nn.Linear(input_size, variable_size))
-                self.output_activations.append(CategoricalActivation())
+                self.output_activations.append(CategoricalActivation(temperature))
             # if not, accumulate numerical variables
             else:
                 numerical_size += 1
@@ -38,11 +38,11 @@ class MultiOutput(OutputLayer):
             self.output_layers.append(nn.Linear(input_size, numerical_size))
             self.output_activations.append(NumericalActivation())
 
-    def forward(self, inputs, training=True, temperature=None, concat=True):
+    def forward(self, inputs, training=True, concat=True):
         outputs = []
         for output_layer, output_activation in zip(self.output_layers, self.output_activations):
             logits = output_layer(inputs)
-            output = output_activation(logits, training=training, temperature=temperature)
+            output = output_activation(logits, training=training)
             outputs.append(output)
 
         if concat:
@@ -53,13 +53,15 @@ class MultiOutput(OutputLayer):
 
 class CategoricalActivation(nn.Module):
 
-    def __init__(self):
+    def __init__(self, temperature):
         super(CategoricalActivation, self).__init__()
 
-    def forward(self, logits, training=True, temperature=None):
+        self.temperature = temperature
+
+    def forward(self, logits, training=True):
         # gumbel-softmax (training and evaluation)
-        if temperature is not None:
-            return F.gumbel_softmax(logits, hard=not training, tau=temperature)
+        if self.temperature is not None:
+            return F.gumbel_softmax(logits, hard=not training, tau=self.temperature)
         # softmax training
         elif training:
             return F.softmax(logits, dim=1)
@@ -73,5 +75,5 @@ class NumericalActivation(nn.Module):
     def __init__(self):
         super(NumericalActivation, self).__init__()
 
-    def forward(self, logits, training=True, temperature=None):
+    def forward(self, logits, training=True):
         return torch.sigmoid(logits)
