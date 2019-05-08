@@ -1,3 +1,4 @@
+from __future__ import division
 from __future__ import print_function
 
 import torch
@@ -21,7 +22,7 @@ class MultiInput(nn.Module):
             # if it is a categorical variable
             else:
                 # this is an arbitrary rule of thumb taken from several blog posts
-                embedding_size = max(min_embedding_size, min(max_embedding_size, variable_size / 2))
+                embedding_size = max(min_embedding_size, min(max_embedding_size, int(variable_size / 2)))
 
                 # the embedding is implemented manually to be able to use one hot encoding
                 # PyTorch embedding only accepts as input label encoding
